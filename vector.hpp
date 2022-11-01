@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 15:46:13 by zhliew            #+#    #+#             */
-/*   Updated: 2022/10/31 20:58:12 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/11/01 19:52:56 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,11 @@ namespace ft
 			bool empty() const
 			{
 				return (_size == 0);
+			}
+
+			void reserve (size_type n)
+			{
+				
 			}
 
 		private:
