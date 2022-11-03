@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 14:54:39 by zhliew            #+#    #+#             */
-/*   Updated: 2022/11/02 12:36:26 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/11/03 19:18:52 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,16 +36,12 @@
 
 #include <iostream>       // std::cerr
 #include <stdexcept>      // std::length_error
-#include <vector>         // std::vector
+#include "vector.hpp"         // std::vector
 
 int main (void) {
-  try {
-    // vector throws a length_error if resized above max_size
-    std::vector<int> myvector;
-    myvector.resize(myvector.max_size()+1);
-  }
-  catch (const std::length_error& le) {
-	  std::cerr << "Length error: " << le.what() << '\n';
-  }
+
+  ft::vector<int> second (4,100);                       // four ints with value 100
+
+  std::cout << second[0] << std::endl;
   return 0;
 }

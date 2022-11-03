@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 19:01:56 by zhliew            #+#    #+#             */
-/*   Updated: 2022/10/31 14:27:47 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/11/03 15:28:58 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ namespace ft
 
 			random_access_iterator operator++(int)
 			{
-				random_access_iterator tmp = *this
+				random_access_iterator tmp = *this;
 				_ptr++;
 				return (tmp);
 			}
@@ -141,7 +141,7 @@ namespace ft
 
 			random_access_iterator operator--(int)
 			{
-				random_access_iterator tmp = *this
+				random_access_iterator tmp = *this;
 				_ptr--;
 				return (tmp);
 			}
@@ -238,7 +238,7 @@ namespace ft
 				: _ptr(nullptr) {}
 
 			reverse_iterator(iterator_type ptr)
-				: _ptr(pt) {}
+				: _ptr(ptr) {}
 
 			reverse_iterator(const reverse_iterator &ref)
 				: _ptr(ref._ptr) {}
@@ -280,7 +280,7 @@ namespace ft
 
 			reverse_iterator operator++(int)
 			{
-				reverse_iterator tmp = *this
+				reverse_iterator tmp = *this;
 				_ptr--;
 				return (tmp);
 			}
@@ -293,7 +293,7 @@ namespace ft
 
 			reverse_iterator operator--(int)
 			{
-				reverse_iterator tmp = *this
+				reverse_iterator tmp = *this;
 				_ptr++;
 				return (tmp);
 			}

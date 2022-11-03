@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/01 15:34:46 by zhliew            #+#    #+#             */
-/*   Updated: 2022/10/24 17:32:41 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/11/03 19:24:34 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ int main()
 	std::cout << "size: " << vc.size() <<std::endl;
 	std::cout << "vector[0]: " << vc[0] <<std::endl;
 	std::cout << "vector back: " << vc.back() << std::endl; 
-	vc.shrink_to_fit();
 	std::cout << "size: " << vc.size() <<std::endl;
 	std::cout << "vector[0]: " << vc[0] <<std::endl;
 	std::cout << "vector back: " << vc.back() << std::endl;

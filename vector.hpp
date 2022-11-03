@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 15:46:13 by zhliew            #+#    #+#             */
-/*   Updated: 2022/11/02 19:19:56 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/11/03 19:18:11 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <iostream>
 # include <memory>
+# include "utils.hpp"
 # include "iterators.hpp"
 
 namespace ft
@@ -44,9 +45,10 @@ namespace ft
 			{
 				this->assign(n, val);
 			}
-	
+
 			template <class InputIterator>
-			vector(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type())
+			vector(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type(),
+				typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0)
 				: _size(0), _capacity(0), _alloc(alloc)
 			{
 				this->assign(first, last);
@@ -136,10 +138,7 @@ namespace ft
 				if (n > _size)
 				{
 					if (n > _capacity)
-					{
-						_capacity = _increase_capacity(n);
-						this->reserve(_capacity);
-					}
+						this->reserve(_increase_capacity(n));
 					for (size_type i = _size; i < n; i++)
 						_alloc.construct(&_arr[i], val);
 				}
@@ -156,14 +155,14 @@ namespace ft
 				return (_size == 0);
 			}
 
-			void reserve (size_type n)
+			void reserve(size_type n)
 			{
 				if (n > this->max_size())
 					throw std::length_error("vector::_M_fill_insert");
 				if (n > _capacity)
 				{
 					value_type *new_arr = _alloc.allocate(n);
-					for (size_type i = 0; i < _size, i++)
+					for (size_type i = 0; i < _size; i++)
 						_alloc.construct(&new_arr[i], _arr[i]);
 					this->clear();
 					_alloc.deallocate(_arr, _capacity);
@@ -208,12 +207,12 @@ namespace ft
 
 			reference back()
 			{
-				return (_arr[size - 1]);
+				return (_arr[_size - 1]);
 			}
 			
 			const_reference back() const
 			{
-				return (_arr[size - 1]);
+				return (_arr[_size - 1]);
 			}
 
 			value_type* data()
@@ -227,16 +226,14 @@ namespace ft
 			}
 
 			template <class InputIterator> 
-			void assign(InputIterator first, InputIterator last)
+			void assign(InputIterator first, InputIterator last,
+						typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0)
 			{
 				size_type n = last - first;
 
 				this->clear();
 				if (n > _capacity)
-				{
-					_capacity = _increase_capacity(n);
-					this->reserve(_capacity);
-				}
+					this->reserve(_increase_capacity(n));
 				for (size_type i = 0; i < n; i++)
 					_alloc.construct(&_arr[i], *first++);
 				_size = n;
@@ -246,10 +243,7 @@ namespace ft
 			{
 				this->clear();
 				if (n > _capacity)
-				{
-					_capacity = _increase_capacity(n);
-					this->reserve(_capacity);
-				}
+					this->reserve(_increase_capacity(n));
 				for (size_type i = 0; i < n; i++)
 					_alloc.construct(&_arr[i], val);
 				_size = n;
@@ -258,65 +252,57 @@ namespace ft
 			void push_back(const value_type& val)
 			{
 				if (_size == _capacity)
-				{
-					_capacity = _increase_capacity(_size + 1);
-					this->reserve(_capacity);
-				}
+					this->reserve(_increase_capacity(_size + 1));
 				_alloc.construct(&_arr[_size], val);
 				_size++;
 			}
 
 			void pop_back()
 			{
-				_alloc.destroy(&_arr[size - 1]);
+				_alloc.destroy(&_arr[_size - 1]);
 				_size--;
 			}
 
 			iterator insert(iterator position, const value_type& val)
 			{
-				size_type val = position - this->begin();
+				size_type i = position - this->begin();
 
 				this->insert(position, 1, val);
-				return (this->begin() + val);
+				return (this->begin() + i);
 			}
 
     		void insert(iterator position, size_type n, const value_type& val)
 			{
-				size_type	val = position - this->begin();
+				size_type	i = position - this->begin();
 
 				if (_size + n > _capacity)
-				{
-					_capacity = _increase_capacity(_size + n);
-					this->reserve(_capacity);
-				}
-				for (size_type back = n + _size - 1; back > val + n - 1; back--)
+					this->reserve(_increase_capacity(_size + n));
+				for (size_type back = n + _size - 1; back > i + n - 1; back--)
 				{
 					_alloc.construct(&_arr[back], _arr[back - n]);
 					_alloc.destroy(&_arr[back - n]);
 				}
-				for (size_type i = 0; i < n; i++)
-					_alloc.construct(&_arr[i + val], val);
+				for (size_type j = 0; j < n; j++)
+					_alloc.construct(&_arr[j + i], val);
 				_size += n;
 			}
 
 			template <class InputIterator>
-			void insert(iterator position, InputIterator first, InputIterator last)
+			void insert(iterator position, InputIterator first, InputIterator last,
+						typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0)
 			{
-				size_type	val = position - this->begin();
+				size_type	i = position - this->begin();
 				size_type	n = last - first;
 
 				if (_size + n > _capacity)
-				{
-					_capacity = _increase_capacity(_size + n);
-					this->reserve(_capacity);
-				}
-				for (size_type back = n + _size - 1; back > val + n - 1; back--)
+					this->reserve(_increase_capacity(_size + n));
+				for (size_type back = n + _size - 1; back > i + n - 1; back--)
 				{
 					_alloc.construct(&_arr[back], _arr[back - n]);
 					_alloc.destroy(&_arr[back - n]);
 				}
-				for (size_type i = 0; i < n; i++)
-					_alloc.construct(&_arr[i + val], *first++);
+				for (size_type j = 0; j < n; j++)
+					_alloc.construct(&_arr[j + i], *first++);
 				_size += n;
 			}
 
@@ -324,7 +310,7 @@ namespace ft
 			{
 				size_type	val = position - begin();
 
-				_alloc.destroy(&_arr[val])
+				_alloc.destroy(&_arr[val]);
 				_size--;
 				for (size_type i = val; i < _size; i++)
 				{
@@ -342,7 +328,7 @@ namespace ft
 				for (iterator tmp = first; tmp != last; tmp++)
 					_alloc.destroy(&(*tmp));
 				_size -= n;
-				for (size_type i = val; i < size; i++)
+				for (size_type i = val; i < _size; i++)
 				{
 					_alloc.construct(&_arr[i + n], &_arr[i + n + 1]);
 					_alloc.destroy(&_arr[i + n + 1]);
@@ -362,7 +348,7 @@ namespace ft
 
 			void clear()
 			{
-				for (size_type i = 0; i < size; i++)
+				for (size_type i = 0; i < _size; i++)
 					_alloc.destroy(&_arr[i]);
 				_size = 0;
 			}
