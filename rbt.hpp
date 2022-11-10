@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 18:12:16 by zhliew            #+#    #+#             */
-/*   Updated: 2022/11/07 17:27:38 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/11/10 15:57:55 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,17 +97,71 @@ namespace ft
 				if (!_node)
 					return *this;
 				else if (_node->right)
-					_node = minimal_node(_node->right);
-				else if (_node == maximal_node(_root->parent))
+				{
+					_node = _node->right
+					while (_node && _node->left)
+						_node = _node->left;
+				}
+				else if (_node = max_node(_node))
 					_node = 0;
-				else {
+				else
+				{
 					while (_node->parent->right == _node)
 						_node = _node->parent;
 					_node = _node->parent;
 				}
 				return *this;
 			}
+
+			rbt_Iterator	operator++(int)
+			{
+				rbt_iterator tmp = *this;
+				(*this)++;
+				return (tmp);
+			}
+
+			rbt_Iterator	&operator--()
+			{
+				
+			}
+
+			rbt_Iterator	operator--(int)
+			{
+				rbt_iterator tmp = *this;
+				(*this)--;
+				return (tmp);
+			}
+
+			bool operator==(rbt_iterator const &ref) const
+			{
+				return (ref._node == _node);
+			}
+
+			bool operator!=(rbt_iterator const &it) const
+			{
+				return (ref._node != _node);
+			}
+
+			operator rbt_iterator<const T>() const
+			{
+            	return (rbt_iterator<const T>(_node));
+        	}
+		
+		private:
+			tree_node	_node;
+
+			tree_node	max_node(tree_node node) const
+			{
+				while (node->parent)
+					node = node->parent;
+				while (node->right)
+					node = node->right;
+				return (node);
+			}
 	};
+
+	
+
 }
 
 #endif
