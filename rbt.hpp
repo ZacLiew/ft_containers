@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 18:12:16 by zhliew            #+#    #+#             */
-/*   Updated: 2022/11/10 15:57:55 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/11/26 18:11:01 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,21 @@ namespace ft
 
 			rbt_Iterator	&operator--()
 			{
-				
+				if (!_node)
+					_node = max_node(_node);
+				else if (_node->left)
+				{
+					_node = _node->left;
+					while (_node->right)
+						_node = _node->right;
+				}
+				else
+				{
+					while (_node->parent->left == _node)
+						_node = _node->parent;
+					_node = _node->parent;
+				}
+				return (*this);
 			}
 
 			rbt_Iterator	operator--(int)
@@ -152,16 +166,29 @@ namespace ft
 
 			tree_node	max_node(tree_node node) const
 			{
-				while (node->parent)
-					node = node->parent;
-				while (node->right)
-					node = node->right;
+				if (node)
+				{
+					while (node->parent)
+						node = node->parent;
+					while (node->right)
+						node = node->right;
+				}
 				return (node);
 			}
 	};
 
-	
+	template <class T, class Compare = std::less<T>, class Allocator = std::allocator<T> >
+	class rbt
+	{
+		public:
 
+
+
+		private:
+
+
+
+	};
 }
 
 #endif
