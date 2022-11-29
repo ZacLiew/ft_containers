@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 18:12:16 by zhliew            #+#    #+#             */
-/*   Updated: 2022/11/29 19:28:44 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/11/29 19:46:42 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ namespace ft
 			typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::difference_type		difference_type;
 			typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::pointer				pointer;
 			typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::reference				reference;
-			typedef ft::node<value_type>															tree_node;
+			typedef node<value_type>																tree_node;
 
 			rbt_iterator()
 				: _node(nullptr);
@@ -267,6 +267,8 @@ namespace ft
 			{
 				return (this->_root);
 			}
+
+
 
 		private:
 			allocator_type	_alloc;
