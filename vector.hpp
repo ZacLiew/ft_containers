@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 15:46:13 by zhliew            #+#    #+#             */
-/*   Updated: 2022/11/26 17:41:05 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/11/28 17:00:46 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ namespace ft
 			typedef ft::reverse_iterator<iterator>							reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
 			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
-			typedef size_t													size_type;
+			typedef std::size_t												size_type;
 			
 			explicit vector(const allocator_type &alloc = allocator_type())
 				: _alloc(alloc), _size(0), _capacity(0), _arr(nullptr) {}

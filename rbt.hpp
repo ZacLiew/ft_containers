@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 18:12:16 by zhliew            #+#    #+#             */
-/*   Updated: 2022/11/26 18:11:01 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/11/29 19:28:44 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,13 +181,98 @@ namespace ft
 	class rbt
 	{
 		public:
+			typedef T											value;
+			typedef Compare										value_compare;
+			typedef Allocator									allocator_type;
+			typedef typename allocator_type::reference			reference;
+			typedef typename allocator_type::const_reference	const_reference;
+			typedef typename allocator_type::pointer			pointer;
+			typedef typename allocator_type::const_pointer		const_pointer;
+			typedef rbt_iterator<T>								iterator;
+			typedef rbt_iterator<const T>						const_iterator;
+			typedef ft::reverse_iterator<iterator>				reverse_iterator;
+			typedef ft::reverse_iterator<const_iterator>		const_reverse_iterator;
+			typedef std::size_t									size_type;
+			typedef node<T>										tree_node;
 
+			tree_node *find(tree_node *node, value &key) const
+			{
+				while (node)
+				{
+					if (_comp(node->value, key))
+						node = node->left;
+					else if (_comp(key, node->value))
+						node = node->right;
+					else
+						return (node);
+				}
+				return (0);
+			}
 
+			tree_node *max_node(tree_node *node) const
+			{
+				if (node)
+				{
+					while (node->right)
+						node = node->right;
+				}
+				return (node);
+			}
+
+			tree_node *min_node(tree_node *node) const
+			{
+				if (node)
+				{
+					while (node->left)
+						node = node->left;
+				}
+				return (node);
+			}
+
+			void	rotate_left(tree_node *x)
+			{
+				tree_node *y = x->right;
+				x->right = y->left;
+				if (y->left)
+					y->left->parent = x;
+				y->parent = x->parent;
+				if (!x->parent)
+					this->_root = y;
+				else if (x->parent->left == x)
+					x->parent->left = y;
+				else
+					x->parent->right = y;
+				y->left = x;
+				x->parent = y;
+			}
+
+			void	rotate_right(tree_node *x)
+			{
+				tree_node *y = x->left;
+				x->left = y->right;
+				if (y->right)
+					y->right->parent = x;
+				y->parent = x->parent;
+				if (!x->parent)
+					this->_root = y;
+				else if (x->parent->left == x)
+					x->parent->left = y;
+				else
+					x->parent->right = y;
+				y->right = x;
+				x->parent = y;
+			}
+
+			tree_node *get_root()
+			{
+				return (this->_root);
+			}
 
 		private:
-
-
-
+			allocator_type	_alloc;
+			value_compare	_comp;
+			size_type		_height;
+			tree_node		*_root;
 	};
 }
 
