@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 15:46:13 by zhliew            #+#    #+#             */
-/*   Updated: 2022/11/28 17:00:46 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/11/30 21:30:03 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,8 @@ namespace ft
 			~vector()
 			{
 				this->clear();
-				_alloc.deallocate(_arr, _capacity);
+				if (this->_capacity != 0)
+					_alloc.deallocate(_arr, _capacity);
 			}
 
 			vector &operator=(const vector &x)
@@ -165,7 +166,8 @@ namespace ft
 					for (size_type i = 0; i < _size; i++)
 						_alloc.construct(&new_arr[i], _arr[i]);
 					this->clear();
-					_alloc.deallocate(_arr, _capacity);
+					if (this->_capacity != 0)
+						_alloc.deallocate(_arr, _capacity);
 					_arr = new_arr;
 					_capacity = n;
 				}
@@ -403,13 +405,13 @@ namespace ft
     template<class T, class Alloc>
     bool operator<=(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs)
 	{
-        return !(lhs > rhs);
+        return (lhs == rhs || lhs < rhs);
     }
 
     template<class T, class Alloc>
     bool operator>=(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs)
 	{
-        return !(lhs < rhs);
+        return (lhs == rhs || lhs > rhs);
     }
 
     template<class T, class Alloc>

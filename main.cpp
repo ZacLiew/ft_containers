@@ -6,20 +6,23 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/01 15:34:46 by zhliew            #+#    #+#             */
-/*   Updated: 2022/11/26 17:40:39 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/11/30 16:18:52 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include <iostream>
-#include <vector.hpp>
+#include "vector.hpp"
+#include <vector>
 
 int main()
 {
-	ft::vector<int> vc;
-	ft::vector<int>  x;
-	ft::vector<float> f;
+	ft::vector<int> a(5, 10);
+	ft::vector<int>	b(5, 10);
 	
+	std::cout << a[0] << '\n' << std::endl;
+	a.insert(a.begin(), a.begin(), a.begin() + 3);
+	std::cout << a[0] << std::endl;
 	// std::vector<int>::iterator it = vc.begin();
 	// std::vector<int>::iterator y = x.begin();
 	// std::vector<float>::iterator tmp = f.begin();

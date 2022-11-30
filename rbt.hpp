@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 18:12:16 by zhliew            #+#    #+#             */
-/*   Updated: 2022/11/29 19:46:42 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/11/30 21:30:29 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,7 @@ namespace ft
 	class rbt
 	{
 		public:
-			typedef T											value;
+			typedef T											value_type;
 			typedef Compare										value_compare;
 			typedef Allocator									allocator_type;
 			typedef typename allocator_type::reference			reference;
@@ -195,7 +195,27 @@ namespace ft
 			typedef std::size_t									size_type;
 			typedef node<T>										tree_node;
 
-			tree_node *find(tree_node *node, value &key) const
+			tree_node *create_node(value_type const &val, tree_node *parent)
+			{
+				tree_node *new_node = _alloc.allocate(1);
+				_alloc.construct(&(new_node->value), val);
+				new_node->left = NULL;
+				new_node->right = NULL;
+				new_node->parent = parent;
+				return (new_node);
+			}
+
+			void	del_node(tree_node *node)
+			{
+				if (node)
+				{
+					if (node->value)
+						_alloc.destroy(&(node->value))
+					_alloc.deallocate(node, 1);
+				}
+			}
+			
+			tree_node *find(tree_node *node, value_type &key) const
 			{
 				while (node)
 				{
@@ -268,13 +288,120 @@ namespace ft
 				return (this->_root);
 			}
 
+			void	balance_insert(tree_node *node)
+			{
+				tree_node *tmp;
+				while (node->parent->isBlack == false)
+				{
+					if (node->parent == node->parent->parent->right)
+					{
+						tmp = node->parent->parent->left;
+						if (tmp->isBlack == false)
+						{
+							tmp->isBlack = true;
+							node->parent->isBlack = true;
+							node->parent->parent->isBlack = false;
+							node = node->parent->parent;
+						}
+						else
+						{
+							if (node == node->parent->left)
+							{
+								node = node->parent;
+								rotate_right(node);
+							}
+							node->parent->isBlack = true;
+							node->parent->parent->isBlack = false;
+							rotate_left(node->parent->parent);
+						}
+					}
+					else
+					{
+						tmp = node->parent->parent->right;
+						if (tmp->isBlack == false)
+						{
+							tmp->isBlack = true;
+							node->parent->isBlack = true;
+							node->parent->parent->isBlack = false;
+							node = node->parent->parent;
+						}
+						else
+						{
+							if (node == node->parent->right)
+							{
+								node = node->parent;
+								rotate_left(node);
+							}
+							node->parent->isBlack = true;
+							node->parent->parent->isBlack = false;
+							rotate_right(node->parent->parent);
+						}
+					}
+					if (node == _root)
+						break;
+				}
+				_root->isBlack = true;
+			}
 
+			bool insert(tree_node *new_node)
+			{
+				if (!_root)
+				{
+					_root = new_node;
+					new_node->isBlack = true;
+				}
+				else
+				{
+					tree_node *tmp = _root;
+					while (tmp)
+					{
+						if (!_comp(tmp->value, new_node->value) && !_comp(new_node->value, tmp->value))
+						{
+							del_node(new_node);
+							return (false);
+						}
+						else if (_comp(tmp->value, new_node->value))
+						{
+							if (tmp->right)
+								tmp = tmp->right;
+							else
+							{
+								tmp->right = new_node;
+								new_node->parent = tmp;
+								break;
+							}
+						}
+						else
+						{
+							if (tmp->left)
+								tmp = tmp->left;
+							else
+							{
+								tmp->left = new_node;
+								new_node->parent = tmp;
+								break;
+							}
+						}
+					}
+				}
+				new_node->isBlack = false;
+
+				return (true);
+			}
+
+			void	delete_node(tree_node *node)
+			{
+				bool	isBlack_original = node->isBlack;
+
+				if ()
+			}
 
 		private:
 			allocator_type	_alloc;
 			value_compare	_comp;
 			size_type		_height;
 			tree_node		*_root;
+			tree_node		*_NIL_NODE;
 	};
 }
 

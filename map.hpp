@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 19:56:33 by zhliew            #+#    #+#             */
-/*   Updated: 2022/11/29 20:16:47 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/11/29 20:18:24 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,8 @@ namespace ft
 			typedef typename allocator_type::const_reference				const_reference;
 			typedef typename allocator_type::pointer						pointer;
 			typedef typename allocator_type::const_pointer					const_pointer;
-			typedef ft::random_access_iterator<value_type>					iterator;
-			typedef ft::random_access_iterator<const value_type>			const_iterator;
+			typedef ft::rbt_iterator<value_type>							iterator;
+			typedef ft::rbt_iterator<const value_type>						const_iterator;
 			typedef ft::reverse_iterator<iterator>							reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
 			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
