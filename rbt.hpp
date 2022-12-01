@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 18:12:16 by zhliew            #+#    #+#             */
-/*   Updated: 2022/11/30 21:30:29 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/01 21:21:20 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,6 +194,7 @@ namespace ft
 			typedef ft::reverse_iterator<const_iterator>		const_reverse_iterator;
 			typedef std::size_t									size_type;
 			typedef node<T>										tree_node;
+
 
 			tree_node *create_node(value_type const &val, tree_node *parent)
 			{
@@ -389,11 +390,126 @@ namespace ft
 				return (true);
 			}
 
+			void	balance_delete(tree_node *node)
+			{
+				tree_node *tmp;
+
+				while (node != _root && node->isBlack == true)
+				{
+					if (node == node->parent->left)
+					{
+						tmp = node->parent->right;
+						if (tmp->isBlack == false)
+						{
+							tmp->isBlack = true;
+							node->parent->isBlack = false;
+							rotate_left(node->parent);
+							tmp = node->parent->right;
+						}
+						if (tmp->left->isBlack == true && node->right->isBlack == true)
+						{
+							tmp->isBlack = false;
+							node = node->parent;
+						}
+						else
+						{
+							if (tmp->right->isBlack == true)
+							{
+								tmp->left->isBlack = true;
+								tmp->isBlack = false;
+								rotate_right(tmp);
+								tmp = node->parent->right;
+							}
+							tmp->isBlack = node->parent->isBlack;
+							node->parent->isBlack = true;
+							tmp->right->isBlack = true;
+							rotate_left(node->parent);
+							node = _root;
+						}
+					}
+					else
+					{
+						tmp = node->parent->left;
+						if (tmp->isBlack == false)
+						{
+							tmp->isBlack = true;
+							node->parent->isBlack = false;
+							rotate_right(node->parent);
+							tmp = node->parent->left;
+						}
+						if (tmp->left->isBlack == true && node->right->isBlack == true)
+						{
+							tmp->isBlack = false;
+							node = node->parent;
+						}
+						else
+						{
+							if (tmp->left->isBlack == true)
+							{
+								tmp->right->isBlack = true;
+								tmp->isBlack = false;
+								rotate_left(tmp);
+								tmp = node->parent->left;
+							}
+							tmp->isBlack = node->parent->isBlack;
+							node->parent->isBlack = true;
+							tmp->left->isBlack = true;
+							rotate_right(node->parent);
+							node = _root;
+						}
+					}
+				}
+				node->isBlack = true;
+			}
+
+			void	transplantnode(tree_node *old, tree_node *neww)
+			{
+				if (old->parent == _NIL_NODE)
+					_root = neww;
+				else if (old->parent->left == old)
+					old->parent->left = neww;
+				else
+					old->parent->right = neww;
+				neww->parent = old->parent;
+			}
+
 			void	delete_node(tree_node *node)
 			{
-				bool	isBlack_original = node->isBlack;
+				tree_node	*rebalance_node;
+				tree_node	*del_node;
+				bool		isBlack_original;
 
-				if ()
+				if (node->left == _NIL_NODE)
+				{
+					rebalance_node = node->right;
+					transplantnode(node, node->right);
+				}
+				else if (node->right == _NIL_NODE)
+				{
+					rebalance_node = node->left;
+					transplantnode(node, node->left);
+				}
+				else
+				{
+					del_node = min_node(node->right);
+					isBlack_original = del_node->isBlack;
+					rebalance_node = del_node->right;
+					if (del_node->parent == node)
+						rebalance_node->parent = del_nodel
+					else
+					{
+						transplantnode(del_node, del_node->right);
+						del_node->right = node->right;
+						del_node->right->parent = del_node;
+					}
+					transplantnode(node, del_node);
+					del_node->left = node->left;
+					del_node->left->parent = del_node;
+					del_node->isBlack = node->isBlack;
+				}
+				if (isBlack_original == true)
+					balance_delete(rebalance_node);
+				del_node(node);
 			}
 
 		private:
