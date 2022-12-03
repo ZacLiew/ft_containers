@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 19:56:33 by zhliew            #+#    #+#             */
-/*   Updated: 2022/12/01 21:32:49 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/02 17:44:56 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,29 @@
 namespace ft
 {
 	template <class Key, class T, class Compare = std::less<Key>, class Allocator = std::allocator<ft::pair<const Key,T> >>
-	class vector
+	class map
 	{
 		public:
+			class value_compare
+			{
+				friend class map;
+				
+				protected:
+					Compare comp;
+					value_compare (Compare c)
+						: comp(c) {}  // constructed with map's comparison object
+				
+				public:
+					typedef bool		result_type;
+					typedef value_type	first_argument_type;
+					typedef value_type	second_argument_type;
+					
+					bool operator()(const value_type& x, const value_type& y) const
+					{
+						return comp(x.first, y.first);
+					}
+			}
+			
 			typedef Key														key_type;
 			typedef T														mapped_type;
 			typedef ft::pair<const key_type, mapped_type>					value_type;
@@ -44,20 +64,21 @@ namespace ft
 			typedef rbt<value_type, key_compare, allocator_type>			rbtree;
 
 			explicit map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
-			{
-
-			}
+				: _tree(comp, alloc), _key_comp(comp), _alloc(alloc) {}
 
 			template<class InputIterator>
 			map(InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
+				: _tree(comp, alloc), _key_comp(comp), _alloc(alloc)
 			{
-
+				while (first != last)
+				{
+					_tree.insert(*first);
+					first++;
+				}
 			}
 
 			map(const map& x)
-			{
-
-			}
+				: _tree(x._tree), _key_comp(x._key_comp), _alloc(x._alloc) {}
 
 			~map()
 			{
@@ -66,7 +87,13 @@ namespace ft
 
 			map& operator=(const map& x)
 			{
-
+				if (*this != x)
+				{
+					_tree = x._tree;
+					_key_comp = x._key_comp;
+					_alloc = x._alloc;
+				}
+				return (*this);
 			}
 
 			iterator begin()
@@ -172,12 +199,12 @@ namespace ft
 
 			key_compare key_comp() const
 			{
-
+				return (this->_key_comp);
 			}
 
 			value_compare value_comp() const
 			{
-
+				return (value_compare(this->_key_comp));
 			}
 
 			iterator find(const key_type& k)
@@ -227,7 +254,7 @@ namespace ft
 
 			allocator_type get_allocator() const
 			{
-
+				return (this->_alloc);
 			}
 		
 		private:
@@ -235,7 +262,6 @@ namespace ft
 			size_type	_size;
 			allocator_type	_alloc;
 			key_compare		_key_comp;
-			value_comp		_val_comp;
 	};
 }
 
