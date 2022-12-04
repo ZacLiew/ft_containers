@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 18:12:16 by zhliew            #+#    #+#             */
-/*   Updated: 2022/12/01 21:21:20 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/04 19:05:56 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,8 +216,10 @@ namespace ft
 				}
 			}
 			
-			tree_node *find(tree_node *node, value_type &key) const
+			tree_node *find(value_type &key) const
 			{
+				tree_node *node = this->_root;
+
 				while (node)
 				{
 					if (_comp(node->value, key))
@@ -227,7 +229,7 @@ namespace ft
 					else
 						return (node);
 				}
-				return (0);
+				return (NULL);
 			}
 
 			tree_node *max_node(tree_node *node) const

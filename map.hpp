@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 19:56:33 by zhliew            #+#    #+#             */
-/*   Updated: 2022/12/02 17:44:56 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/04 19:54:01 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ namespace ft
 			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
 			typedef std::size_t												size_type;
 			typedef rbt<value_type, key_compare, allocator_type>			rbtree;
+			typedef node<T>													tree_node;
 
 			explicit map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
 				: _tree(comp, alloc), _key_comp(comp), _alloc(alloc) {}
@@ -153,10 +154,11 @@ namespace ft
 
 			mapped_type &operator[](const key_type& k)
 			{
-
+				return ((*((this->insert(make_pair(k,mapped_type()))).first)).second);
 			}
 
-			pair<iterator,bool> insert(const value_type& val)
+			ft::pair<iterator,bool>
+			insert(const value_type& val)
 			{
 
 			}
@@ -209,17 +211,29 @@ namespace ft
 
 			iterator find(const key_type& k)
 			{
+				tree_node *tmp = _tree.find(ft::make_pair(k, mapped_type()));
 
+				if (tmp)
+					return (iterator(tmp));
+				return (this->end());
 			}
 			
 			const_iterator find (const key_type& k) const
 			{
+				tree_node *tmp = _tree.find(ft::make_pair(k, mapped_type()));
 
+				if (tmp)
+					return (const_iterator(tmp));
+				return (this->end());
 			}
 
 			size_type count(const key_type& k) const
 			{
+				tree_node *tmp = _tree.find(ft::make_pair(k, mapped_type()));
 
+				if (tmp)
+					return (1);
+				return (0);
 			}
 
 			iterator lower_bound(const key_type& k)
