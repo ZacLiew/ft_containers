@@ -6,23 +6,26 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/01 15:34:46 by zhliew            #+#    #+#             */
-/*   Updated: 2022/11/30 16:18:52 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/05 19:24:12 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include <iostream>
-#include "vector.hpp"
-#include <vector>
+// #include "vector.hpp"
+// #include <vector>
+#include <map>
+
+using namespace std;
 
 int main()
 {
-	ft::vector<int> a(5, 10);
-	ft::vector<int>	b(5, 10);
+	// ft::vector<int> a(5, 10);
+	// ft::vector<int>	b(5, 10);
 	
-	std::cout << a[0] << '\n' << std::endl;
-	a.insert(a.begin(), a.begin(), a.begin() + 3);
-	std::cout << a[0] << std::endl;
+	// std::cout << a[0] << '\n' << std::endl;
+	// a.insert(a.begin(), a.begin(), a.begin() + 3);
+	// std::cout << a[0] << std::endl;
 	// std::vector<int>::iterator it = vc.begin();
 	// std::vector<int>::iterator y = x.begin();
 	// std::vector<float>::iterator tmp = f.begin();
@@ -47,5 +50,31 @@ int main()
 	// std::cout << "vector back: " << vc.back() << std::endl;
 	// vc.resize(0);
 	// std::cout << vc.empty() << std::endl;
+	// std::map<int, int> mp;
+  
+    // // insert elements in random order
+    // mp.insert(std::make_pair(12, 30));
+    // mp.insert(std::make_pair(11, 10));
+    // mp.insert(std::make_pair(15, 50));
+    // mp.insert(std::make_pair(14, 40));
+  
+    // // when 11 is present
+    // std::map<int,int>::iterator it = mp.upper_bound(11);
+    // cout << "The upper bound of key 11 is ";
+    // cout << (*it).first << " " << (*it).second << endl;
+  
+    // // when 13 is not present
+    // it = mp.upper_bound(13);
+    // cout << "The upper bound of key 13 is ";
+    // cout << (*it).first << " " << (*it).second << endl;
+  
+    // // when 17 is exceeds the maximum key, so size
+    //     // of mp is returned as key and value as 0.
+    // it = mp.upper_bound(17);
+    // // cout << "The upper bound of key 17 is ";
+    // cout << (*it).first << " " << (*it).second;
+	std::less<int> comp;
+
+	cout << comp(12, 12) << endl;
 	return (0);
 }

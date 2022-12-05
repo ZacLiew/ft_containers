@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 18:12:16 by zhliew            #+#    #+#             */
-/*   Updated: 2022/12/04 19:05:56 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/05 19:27:35 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,13 +196,13 @@ namespace ft
 			typedef node<T>										tree_node;
 
 
-			tree_node *create_node(value_type const &val, tree_node *parent)
+			tree_node *create_node(value_type const &val)
 			{
 				tree_node *new_node = _alloc.allocate(1);
 				_alloc.construct(&(new_node->value), val);
-				new_node->left = NULL;
-				new_node->right = NULL;
-				new_node->parent = parent;
+				new_node->left = _NIL_NODE;
+				new_node->right = _NIL_NODE;
+				new_node->parent = _NIL_NODE;
 				return (new_node);
 			}
 
@@ -388,7 +388,8 @@ namespace ft
 					}
 				}
 				new_node->isBlack = false;
-
+				balance_insert(new_node);
+				_size++;
 				return (true);
 			}
 
@@ -512,12 +513,74 @@ namespace ft
 				if (isBlack_original == true)
 					balance_delete(rebalance_node);
 				del_node(node);
+				_size--;
+			}
+
+			bool empty() const
+			{
+				return (!_size);
+			}
+
+			size_type size() const
+			{
+				return (_size);
+			}
+
+			void	clear(tree_node *node)
+			{
+				if (node == _NIL_NODE)
+					return;
+				if (node)
+				{
+					if (_node->left != _NIL_NODE);
+						clear(node->left);
+					if (_node->right != _NIL_NODE);
+						clear(node->right);
+					del_node(node);
+				}
+				_root = _NIL_NODE;
+			}
+
+			tree_node *lower_bound(value_type const &value) const
+			{
+				tree_node *node = _root;
+				tree_node *lower = _NIL_NODE;
+				
+				while (node != _NIL_NODE)
+				{
+					if (!_comp(node->value, value))
+					{
+						lower = node;
+						node = node->left;
+					}
+					else
+						node = node->right;
+				}
+				return (lower);
+			}
+
+			tree_node *upper_bound(value_type const &value) const
+			{
+				tree_node *node = _root;
+				tree_node *upper = _NIL_NODE;
+				
+				while (node != _NIL_NODE)
+				{
+					if (_comp(value, node->value))
+					{
+						upper = node;
+						node = node->left;
+					}
+					else
+						node = node->right;
+				}
+				return (upper);
 			}
 
 		private:
 			allocator_type	_alloc;
 			value_compare	_comp;
-			size_type		_height;
+			size_type		_size;
 			tree_node		*_root;
 			tree_node		*_NIL_NODE;
 	};
