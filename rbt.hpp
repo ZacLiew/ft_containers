@@ -6,13 +6,15 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 18:12:16 by zhliew            #+#    #+#             */
-/*   Updated: 2022/12/05 19:27:35 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/06 19:25:44 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef RBT_HPP
 # define RBT_HPP
 
+# include <iostream>
+# include <memory>
 #include "iterators.hpp"
 #include "utils.hpp"
 
@@ -60,18 +62,18 @@ namespace ft
 			typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::difference_type		difference_type;
 			typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::pointer				pointer;
 			typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::reference				reference;
-			typedef node<value_type>																tree_node;
+			typedef ft::node<value_type>															tree_node;
 
 			rbt_iterator()
-				: _node(nullptr);
+				: _node(nullptr) {}
 			
 			rbt_iterator(tree_node *node)
 				: _node(node) {}
 
-			random_access_iterator(const rbt_iterator &ref)
+			rbt_iterator(const rbt_iterator &ref)
 				: _node(ref._node) {}
 
-			~random_access_iterator()
+			~rbt_iterator()
 				{}
 
 			rbt_iterator &operator=(const rbt_iterator &ref)
@@ -98,11 +100,11 @@ namespace ft
 					return *this;
 				else if (_node->right)
 				{
-					_node = _node->right
+					_node = _node->right;
 					while (_node && _node->left)
 						_node = _node->left;
 				}
-				else if (_node = max_node(_node))
+				else if (_node == max_node(_node))
 					_node = 0;
 				else
 				{
@@ -113,14 +115,14 @@ namespace ft
 				return *this;
 			}
 
-			rbt_Iterator	operator++(int)
+			rbt_iterator	operator++(int)
 			{
 				rbt_iterator tmp = *this;
 				(*this)++;
 				return (tmp);
 			}
 
-			rbt_Iterator	&operator--()
+			rbt_iterator	&operator--()
 			{
 				if (!_node)
 					_node = max_node(_node);
@@ -139,7 +141,7 @@ namespace ft
 				return (*this);
 			}
 
-			rbt_Iterator	operator--(int)
+			rbt_iterator	operator--(int)
 			{
 				rbt_iterator tmp = *this;
 				(*this)--;
@@ -151,7 +153,7 @@ namespace ft
 				return (ref._node == _node);
 			}
 
-			bool operator!=(rbt_iterator const &it) const
+			bool operator!=(rbt_iterator const &ref) const
 			{
 				return (ref._node != _node);
 			}
@@ -162,7 +164,7 @@ namespace ft
         	}
 		
 		private:
-			tree_node	_node;
+			tree_node	*_node;
 
 			tree_node	max_node(tree_node node) const
 			{
@@ -188,13 +190,52 @@ namespace ft
 			typedef typename allocator_type::const_reference	const_reference;
 			typedef typename allocator_type::pointer			pointer;
 			typedef typename allocator_type::const_pointer		const_pointer;
-			typedef rbt_iterator<T>								iterator;
-			typedef rbt_iterator<const T>						const_iterator;
+			typedef ft::rbt_iterator<T>							iterator;
+			typedef ft::rbt_iterator<const T>					const_iterator;
 			typedef ft::reverse_iterator<iterator>				reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>		const_reverse_iterator;
+			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type; //******************
 			typedef std::size_t									size_type;
-			typedef node<T>										tree_node;
+			typedef ft::node<T>									tree_node;
 
+			rbt(value_compare const &comp, allocator_type const &alloc)
+				: _NIL_NODE(create_nil()), _root(_NIL_NODE), _size(0), _comp(comp), _alloc(alloc) {}
+
+			rbt(rbt const &ref)
+				: _NIL_NODE(create_nil()), _root(_NIL_NODE), _comp(ref._comp), _alloc(ref._alloc)
+			{
+				iterator first = ref.min_node(ref.get_root());
+				iterator last = ref.max_node(ref.get_root());
+				while (first != last)
+				{
+					this->insert(*first);
+					first++;
+				}
+			};
+
+			rbt &operator=(rbt const &ref)
+			{
+				if (*this != ref)
+				{
+					clear(this->_root);
+					iterator first = ref.min_node(ref.get_root());
+					iterator last = ref.max_node(ref.get_root());
+					while (first != last)
+					{
+						this->insert(*first);
+						first++;
+					}
+					_comp = ref._comp;
+					_alloc = ref._alloc;
+				}
+				return (*this);
+			}
+
+			~rbt()
+			{
+				clear(_root);
+				free_nil();
+			}
 
 			tree_node *create_node(value_type const &val)
 			{
@@ -206,12 +247,27 @@ namespace ft
 				return (new_node);
 			}
 
-			void	del_node(tree_node *node)
+			tree_node *create_nil()
 			{
-				if (node)
+				tree_node *nil_node = _alloc.allocate(1);
+				nil_node->left = NULL;
+				nil_node->right = NULL;
+				nil_node->parent = NULL;
+				nil_node->isBlack = true;
+				return (nil_node);
+			}
+
+			void	free_nil()
+			{
+				_alloc.deallocate(_NIL_NODE, 1);
+			}
+
+			void	free_node(tree_node *node)
+			{
+				if (node != _NIL_NODE)
 				{
 					if (node->value)
-						_alloc.destroy(&(node->value))
+						_alloc.destroy(&(node->value));
 					_alloc.deallocate(node, 1);
 				}
 			}
@@ -220,7 +276,7 @@ namespace ft
 			{
 				tree_node *node = this->_root;
 
-				while (node)
+				while (node != _NIL_NODE)
 				{
 					if (_comp(node->value, key))
 						node = node->left;
@@ -234,7 +290,7 @@ namespace ft
 
 			tree_node *max_node(tree_node *node) const
 			{
-				if (node)
+				if (node != _NIL_NODE)
 				{
 					while (node->right)
 						node = node->right;
@@ -244,7 +300,7 @@ namespace ft
 
 			tree_node *min_node(tree_node *node) const
 			{
-				if (node)
+				if (node != _NIL_NODE)
 				{
 					while (node->left)
 						node = node->left;
@@ -286,7 +342,7 @@ namespace ft
 				x->parent = y;
 			}
 
-			tree_node *get_root()
+			tree_node *get_root() const
 			{
 				return (this->_root);
 			}
@@ -346,9 +402,14 @@ namespace ft
 				_root->isBlack = true;
 			}
 
+			bool insert(value_type const &val)
+			{
+				return (insert(this->create_node(val)));
+			}
+
 			bool insert(tree_node *new_node)
 			{
-				if (!_root)
+				if (_root == _NIL_NODE)
 				{
 					_root = new_node;
 					new_node->isBlack = true;
@@ -356,11 +417,11 @@ namespace ft
 				else
 				{
 					tree_node *tmp = _root;
-					while (tmp)
+					while (tmp != _NIL_NODE)
 					{
 						if (!_comp(tmp->value, new_node->value) && !_comp(new_node->value, tmp->value))
 						{
-							del_node(new_node);
+							free_node(new_node);
 							return (false);
 						}
 						else if (_comp(tmp->value, new_node->value))
@@ -386,8 +447,8 @@ namespace ft
 							}
 						}
 					}
+					new_node->isBlack = false;
 				}
-				new_node->isBlack = false;
 				balance_insert(new_node);
 				_size++;
 				return (true);
@@ -498,7 +559,7 @@ namespace ft
 					isBlack_original = del_node->isBlack;
 					rebalance_node = del_node->right;
 					if (del_node->parent == node)
-						rebalance_node->parent = del_nodel
+						rebalance_node->parent = del_node;
 					else
 					{
 						transplantnode(del_node, del_node->right);
@@ -512,7 +573,7 @@ namespace ft
 				}
 				if (isBlack_original == true)
 					balance_delete(rebalance_node);
-				del_node(node);
+				free_node(node);
 				_size--;
 			}
 
@@ -532,11 +593,11 @@ namespace ft
 					return;
 				if (node)
 				{
-					if (_node->left != _NIL_NODE);
+					if (node->left != _NIL_NODE)
 						clear(node->left);
-					if (_node->right != _NIL_NODE);
+					if (node->right != _NIL_NODE)
 						clear(node->right);
-					del_node(node);
+					free_node(node);
 				}
 				_root = _NIL_NODE;
 			}

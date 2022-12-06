@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/03 19:48:52 by zhliew            #+#    #+#             */
-/*   Updated: 2022/11/04 15:13:31 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/06 17:20:11 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ namespace ft
 				: first(), second() {}
 
 			template<class U, class V>
-			pair(const pair<U, V> &pr)
+			pair(const pair<U, V> &p)
 				: first(p.first), second(p.second) {}
 
 			pair(const first_type &a, const second_type &b)
@@ -38,7 +38,7 @@ namespace ft
 			~pair()
 				{}
 			
-			pair &operator=(const pair& pr)
+			pair &operator=(const pair& p)
 			{
 				if (*this != p)
 				{

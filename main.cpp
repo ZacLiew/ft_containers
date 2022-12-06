@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/01 15:34:46 by zhliew            #+#    #+#             */
-/*   Updated: 2022/12/05 19:24:12 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/06 19:14:26 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,8 @@
 #include <iostream>
 // #include "vector.hpp"
 // #include <vector>
-#include <map>
+#include "map.hpp"
 
-using namespace std;
 
 int main()
 {
@@ -73,8 +72,8 @@ int main()
     // it = mp.upper_bound(17);
     // // cout << "The upper bound of key 17 is ";
     // cout << (*it).first << " " << (*it).second;
-	std::less<int> comp;
-
-	cout << comp(12, 12) << endl;
+	ft::map<int, int> m;
+	// std::less<int> comp;
+	// std::cout << comp(1, 1) << std::endl;
 	return (0);
 }

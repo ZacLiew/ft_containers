@@ -692,3 +692,8 @@ namespace ft
 };
 
 #endif
+
+./rbt.hpp:422:12: error: no matching function for call to object of type
+'ft::rbt<ft::pair<const int, int>, std::__1::less<int>, std::__1::allocator<ft::pair<const int,
+      int> > >::value_compare' (aka 'std::__1::less<int>')
+                                                if (!_comp(tmp->value, new_node->value) && !_comp(new_node->value, tmp->value))
