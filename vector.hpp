@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/04 15:46:13 by zhliew            #+#    #+#             */
-/*   Updated: 2022/11/30 21:30:03 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/10 16:16:36 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,13 @@ namespace ft
 			typedef std::size_t												size_type;
 			
 			explicit vector(const allocator_type &alloc = allocator_type())
-				: _alloc(alloc), _size(0), _capacity(0), _arr(nullptr) {}
+				:  _arr(nullptr), _size(0), _capacity(0), _alloc(alloc) {}
 
 			explicit vector(size_type n, const value_type &val = value_type(), const allocator_type &alloc = allocator_type())
 				: _size(0), _capacity(0), _alloc(alloc)
 			{
+				if ((int)n < 0)
+					throw std::bad_alloc();
 				this->assign(n, val);
 			}
 
@@ -164,8 +166,10 @@ namespace ft
 				{
 					value_type *new_arr = _alloc.allocate(n);
 					for (size_type i = 0; i < _size; i++)
+					{
 						_alloc.construct(&new_arr[i], _arr[i]);
-					this->clear();
+						_alloc.destroy(&_arr[i]);
+					}
 					if (this->_capacity != 0)
 						_alloc.deallocate(_arr, _capacity);
 					_arr = new_arr;
@@ -231,7 +235,7 @@ namespace ft
 			void assign(InputIterator first, InputIterator last,
 						typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0)
 			{
-				size_type n = last - first;
+				size_type n = ft::distance(first, last);
 
 				this->clear();
 				if (n > _capacity)
@@ -267,7 +271,7 @@ namespace ft
 
 			iterator insert(iterator position, const value_type& val)
 			{
-				size_type i = position - this->begin();
+				size_type i = ft::distance(this->begin(), position);
 
 				this->insert(position, 1, val);
 				return (this->begin() + i);
@@ -275,7 +279,7 @@ namespace ft
 
     		void insert(iterator position, size_type n, const value_type& val)
 			{
-				size_type	i = position - this->begin();
+				size_type	i = ft::distance(this->begin(), position);
 
 				if (_size + n > _capacity)
 					this->reserve(_increase_capacity(_size + n));
@@ -293,8 +297,8 @@ namespace ft
 			void insert(iterator position, InputIterator first, InputIterator last,
 						typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0)
 			{
-				size_type	i = position - this->begin();
-				size_type	n = last - first;
+				size_type	i = position - begin();
+				size_type	n = ft::distance(first, last);
 
 				if (_size + n > _capacity)
 					this->reserve(_increase_capacity(_size + n));
@@ -316,7 +320,7 @@ namespace ft
 				_size--;
 				for (size_type i = val; i < _size; i++)
 				{
-					_alloc.construct(&_arr[i], &_arr[i + 1]);
+					_alloc.construct(&_arr[i], _arr[i + 1]);
 					_alloc.destroy(&_arr[i + 1]);
 				}
 				return (position);
@@ -324,18 +328,20 @@ namespace ft
 			
 			iterator erase(iterator first, iterator last)
 			{
-				size_type	val = first - begin();
 				size_type	n = last - first;
 
-				for (iterator tmp = first; tmp != last; tmp++)
-					_alloc.destroy(&(*tmp));
-				_size -= n;
-				for (size_type i = val; i < _size; i++)
+				while (first != end() - n)
 				{
-					_alloc.construct(&_arr[i + n], &_arr[i + n + 1]);
-					_alloc.destroy(&_arr[i + n + 1]);
+					*first = first[n];
+					first++;
 				}
-				return (first);
+				while (first != end())
+				{
+					_alloc.destroy(&(*first));
+					first++;
+				}
+				_size -= n;
+				return (last - n);
 			}
 
 			void swap(vector& x)

@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 18:12:16 by zhliew            #+#    #+#             */
-/*   Updated: 2022/12/06 19:25:44 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/07 13:56:37 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,13 +197,18 @@ namespace ft
 			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type; //******************
 			typedef std::size_t									size_type;
 			typedef ft::node<T>									tree_node;
+			typedef std::allocator<tree_node>					tree_allocator;
 
 			rbt(value_compare const &comp, allocator_type const &alloc)
-				: _NIL_NODE(create_nil()), _root(_NIL_NODE), _size(0), _comp(comp), _alloc(alloc) {}
+				: _NIL_NODE(create_nil()), _size(0), _comp(comp), _alloc(alloc)
+			{
+				_root = _NIL_NODE;
+			}
 
 			rbt(rbt const &ref)
-				: _NIL_NODE(create_nil()), _root(_NIL_NODE), _comp(ref._comp), _alloc(ref._alloc)
+				: _NIL_NODE(create_nil()), _comp(ref._comp), _alloc(ref._alloc)
 			{
+				_root = _NIL_NODE;
 				iterator first = ref.min_node(ref.get_root());
 				iterator last = ref.max_node(ref.get_root());
 				while (first != last)
@@ -239,7 +244,7 @@ namespace ft
 
 			tree_node *create_node(value_type const &val)
 			{
-				tree_node *new_node = _alloc.allocate(1);
+				tree_node *new_node = _tree_alloc.allocate(1);
 				_alloc.construct(&(new_node->value), val);
 				new_node->left = _NIL_NODE;
 				new_node->right = _NIL_NODE;
@@ -249,7 +254,7 @@ namespace ft
 
 			tree_node *create_nil()
 			{
-				tree_node *nil_node = _alloc.allocate(1);
+				tree_node *nil_node = _tree_alloc.allocate(1);
 				nil_node->left = NULL;
 				nil_node->right = NULL;
 				nil_node->parent = NULL;
@@ -259,20 +264,19 @@ namespace ft
 
 			void	free_nil()
 			{
-				_alloc.deallocate(_NIL_NODE, 1);
+				_tree_alloc.deallocate(_NIL_NODE, 1);
 			}
 
 			void	free_node(tree_node *node)
 			{
 				if (node != _NIL_NODE)
 				{
-					if (node->value)
-						_alloc.destroy(&(node->value));
-					_alloc.deallocate(node, 1);
+					_alloc.destroy(&(node->value));
+					_tree_alloc.deallocate(node, 1);
 				}
 			}
 			
-			tree_node *find(value_type &key) const
+			tree_node *find(value_type const &key) const
 			{
 				tree_node *node = this->_root;
 
@@ -639,6 +643,7 @@ namespace ft
 			}
 
 		private:
+			tree_allocator	_tree_alloc;
 			allocator_type	_alloc;
 			value_compare	_comp;
 			size_type		_size;
