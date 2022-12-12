@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 18:12:16 by zhliew            #+#    #+#             */
-/*   Updated: 2022/12/07 13:56:37 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/12 18:50:54 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ namespace ft
 			typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::pointer				pointer;
 			typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::reference				reference;
 			typedef ft::node<value_type>															tree_node;
+			typedef ft::node<const value_type>														const_tree_node;
 
 			rbt_iterator()
 				: _node(nullptr) {}
@@ -118,7 +119,7 @@ namespace ft
 			rbt_iterator	operator++(int)
 			{
 				rbt_iterator tmp = *this;
-				(*this)++;
+				operator++();
 				return (tmp);
 			}
 
@@ -144,7 +145,7 @@ namespace ft
 			rbt_iterator	operator--(int)
 			{
 				rbt_iterator tmp = *this;
-				(*this)--;
+				operator--();
 				return (tmp);
 			}
 
@@ -158,15 +159,15 @@ namespace ft
 				return (ref._node != _node);
 			}
 
-			operator rbt_iterator<const T>() const
+			operator rbt_iterator<const value_type>() const
 			{
-            	return (rbt_iterator<const T>(_node));
+            	return (rbt_iterator<const value_type>(reinterpret_cast<const_tree_node *>(_node)));
         	}
 		
 		private:
 			tree_node	*_node;
 
-			tree_node	max_node(tree_node node) const
+			tree_node	*max_node(tree_node *node) const
 			{
 				if (node)
 				{
@@ -194,19 +195,18 @@ namespace ft
 			typedef ft::rbt_iterator<const T>					const_iterator;
 			typedef ft::reverse_iterator<iterator>				reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>		const_reverse_iterator;
-			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type; //******************
 			typedef std::size_t									size_type;
 			typedef ft::node<T>									tree_node;
 			typedef std::allocator<tree_node>					tree_allocator;
 
 			rbt(value_compare const &comp, allocator_type const &alloc)
-				: _NIL_NODE(create_nil()), _size(0), _comp(comp), _alloc(alloc)
+				: _size(0), _comp(comp), _alloc(alloc), _NIL_NODE(create_nil())
 			{
 				_root = _NIL_NODE;
 			}
 
 			rbt(rbt const &ref)
-				: _NIL_NODE(create_nil()), _comp(ref._comp), _alloc(ref._alloc)
+				: _comp(ref._comp), _alloc(ref._alloc), _NIL_NODE(create_nil())
 			{
 				_root = _NIL_NODE;
 				iterator first = ref.min_node(ref.get_root());
@@ -220,7 +220,7 @@ namespace ft
 
 			rbt &operator=(rbt const &ref)
 			{
-				if (*this != ref)
+				if (this != &ref)
 				{
 					clear(this->_root);
 					iterator first = ref.min_node(ref.get_root());
@@ -591,6 +591,11 @@ namespace ft
 				return (_size);
 			}
 
+			size_type max_size() const
+			{
+				return (_tree_alloc.max_size());
+			}
+
 			void	clear(tree_node *node)
 			{
 				if (node == _NIL_NODE)
@@ -643,10 +648,10 @@ namespace ft
 			}
 
 		private:
+			size_type		_size;
+			value_compare	_comp;
 			tree_allocator	_tree_alloc;
 			allocator_type	_alloc;
-			value_compare	_comp;
-			size_type		_size;
 			tree_node		*_root;
 			tree_node		*_NIL_NODE;
 	};

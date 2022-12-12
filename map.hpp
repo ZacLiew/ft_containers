@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 19:56:33 by zhliew            #+#    #+#             */
-/*   Updated: 2022/12/07 14:07:48 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/12 18:50:03 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,15 +85,15 @@ namespace ft
 				}
 			}
 
-			map(const map& x)
+			map(map const& x)
 				: _tree(x._tree), _key_comp(x._key_comp), _alloc(x._alloc) {}
 
 			~map()
 				{}
 
-			map& operator=(const map& x)
+			map& operator=(map const &x)
 			{
-				if (*this != x)
+				if (this != &x)
 				{
 					_tree = x._tree;
 					_key_comp = x._key_comp;
@@ -109,7 +109,7 @@ namespace ft
 			
 			const_iterator begin() const
 			{
-				return (const_iterator(_tree.min_node(_tree.get_root())));
+				return (iterator(_tree.min_node(_tree.get_root())));
 			}
 
 			iterator end()
@@ -119,7 +119,7 @@ namespace ft
 			
 			const_iterator end() const
 			{
-				return (const_iterator(_tree.max_node(_tree.get_root())));
+				return (iterator(_tree.max_node(_tree.get_root())));
 			}
 
 			reverse_iterator rbegin()
@@ -129,7 +129,7 @@ namespace ft
 			
 			const_reverse_iterator rbegin() const
 			{
-				return (const_reverse_iterator(this->end()));
+				return (reverse_iterator(this->end()));
 			}
 
 			reverse_iterator rend()
@@ -139,7 +139,7 @@ namespace ft
 
 			const_reverse_iterator rend() const
 			{
-				return (const_reverse_iterator(this->begin()));
+				return (reverse_iterator(this->begin()));
 			}
 
 			bool empty() const
@@ -154,7 +154,7 @@ namespace ft
 
 			size_type max_size() const
 			{
-				return (_alloc.max_size());
+				return (_tree.max_size());
 			}
 
 			mapped_type &operator[](const key_type& k)
@@ -261,9 +261,9 @@ namespace ft
 				return (iterator(_tree.lower_bound(ft::make_pair(k, mapped_type()))));
 			}
 			
-			const_iterator lower_bound (const key_type& k) const
+			const_iterator lower_bound(const key_type& k) const
 			{
-				return (const_iterator(_tree.lower_bound(ft::make_pair(k, mapped_type()))));
+				return (iterator(_tree.lower_bound(ft::make_pair(k, mapped_type()))));
 			}
 
 			iterator upper_bound(const key_type& k)
@@ -271,19 +271,19 @@ namespace ft
 				return (iterator(_tree.upper_bound(ft::make_pair(k, mapped_type()))));
 			}
 			
-			const_iterator upper_bound (const key_type& k) const
+			const_iterator upper_bound(const key_type& k) const
 			{
-				return (const_iterator(_tree.upper_bound(ft::make_pair(k, mapped_type()))));
-			}
-
-			pair<const_iterator,const_iterator> equal_range(const key_type& k) const
-			{
-				return (ft::make_pair(this->lower_bound(k), this->upper_bound(k)));
+				return (iterator(_tree.upper_bound(ft::make_pair(k, mapped_type()))));
 			}
 			
 			pair<iterator,iterator> equal_range(const key_type& k)
 			{
-				return (ft::make_pair(this->lower_bound(k), this->upper_bound(k)));
+				return (ft::make_pair(lower_bound(k), upper_bound(k)));
+			}
+
+			pair<const_iterator,const_iterator> equal_range(const key_type& k) const
+			{
+				return (ft::make_pair(lower_bound(k), upper_bound(k)));
 			}
 
 			allocator_type get_allocator() const
@@ -293,10 +293,9 @@ namespace ft
 		
 		private:
 			rbtree			_tree;
-			allocator_type	_alloc;
 			key_compare		_key_comp;
+			allocator_type	_alloc;
 	};
 }
 
 #endif
-
