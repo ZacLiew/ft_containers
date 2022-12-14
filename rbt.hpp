@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 18:12:16 by zhliew            #+#    #+#             */
-/*   Updated: 2022/12/14 23:11:24 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/14 23:18:32 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,13 +31,14 @@ namespace ft
 		node		*right;
 		node		*parent;
 		bool		isBlack;
+		bool		isNIL;
 
 		node()
-			: value(0), left(0), right(0), parent(0), isBlack(false) {} 
+			: value(0), left(0), right(0), parent(0), isBlack(false), isNIL(false) {} 
 
 		node(const node &ref)
 			: value(ref.value), left(ref.left), right(ref.right),
-			parent(ref.parent), isBlack(ref.isBlack) {} 
+			parent(ref.parent), isBlack(ref.isBlack), isNIL(ref.isNIL){} 
 
 		~node()
 			{}
@@ -49,6 +50,7 @@ namespace ft
 			right = ref.right;
 			parent = ref.parent;
 			isBlack = ref.isBlack;
+			isNIL = ref.isNIL;
 			return (*this);
 		}
 	};
@@ -260,6 +262,7 @@ namespace ft
 				new_node->left = _NIL_NODE;
 				new_node->right = _NIL_NODE;
 				new_node->parent = _NIL_NODE;
+				new_node->isNIL = false;
 				return (new_node);
 			}
 
@@ -270,6 +273,7 @@ namespace ft
 				nil_node->right = NULL;
 				nil_node->parent = NULL;
 				nil_node->isBlack = true;
+				nil_node->isNIL = true;
 				return (nil_node);
 			}
 
