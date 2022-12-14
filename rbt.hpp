@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 18:12:16 by zhliew            #+#    #+#             */
-/*   Updated: 2022/12/12 18:50:54 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/14 23:11:24 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ namespace ft
             	return (&(_node->value));
         	}
 
+			///wrong here, need to find a way to stop at NIL_NODE and not NULL, same goes for --
 			rbt_iterator &operator++()
 			{
 				if (!_node)
@@ -163,6 +164,11 @@ namespace ft
 			{
             	return (rbt_iterator<const value_type>(reinterpret_cast<const_tree_node *>(_node)));
         	}
+
+			tree_node *base() const
+			{
+				return (_node);
+			}
 		
 		private:
 			tree_node	*_node;
@@ -210,12 +216,14 @@ namespace ft
 			{
 				_root = _NIL_NODE;
 				iterator first = ref.min_node(ref.get_root());
-				iterator last = ref.max_node(ref.get_root());
-				while (first != last)
+				iterator end = ref.max_node(ref.get_root());
+				while (first != end)
 				{
 					this->insert(*first);
 					first++;
 				}
+				if (first != ref.get_nil() && first == end)
+					this->insert(*first);
 			};
 
 			rbt &operator=(rbt const &ref)
@@ -224,12 +232,15 @@ namespace ft
 				{
 					clear(this->_root);
 					iterator first = ref.min_node(ref.get_root());
-					iterator last = ref.max_node(ref.get_root());
-					while (first != last)
+					iterator end = ref.max_node(ref.get_root());
+					// std::cout << (*first).first << std::endl;
+					while (first != end)
 					{
 						this->insert(*first);
 						first++;
 					}
+					if (first != ref.get_nil() && first == end)
+						this->insert(*first);
 					_comp = ref._comp;
 					_alloc = ref._alloc;
 				}
@@ -282,21 +293,21 @@ namespace ft
 
 				while (node != _NIL_NODE)
 				{
-					if (_comp(node->value, key))
+					if (_comp(key, node->value))
 						node = node->left;
-					else if (_comp(key, node->value))
+					else if (_comp(node->value, key))
 						node = node->right;
 					else
 						return (node);
 				}
-				return (NULL);
+				return (0);
 			}
 
 			tree_node *max_node(tree_node *node) const
 			{
 				if (node != _NIL_NODE)
 				{
-					while (node->right)
+					while (node->right != _NIL_NODE)
 						node = node->right;
 				}
 				return (node);
@@ -306,7 +317,7 @@ namespace ft
 			{
 				if (node != _NIL_NODE)
 				{
-					while (node->left)
+					while (node->left != _NIL_NODE)
 						node = node->left;
 				}
 				return (node);
@@ -316,10 +327,10 @@ namespace ft
 			{
 				tree_node *y = x->right;
 				x->right = y->left;
-				if (y->left)
+				if (y->left != _NIL_NODE)
 					y->left->parent = x;
 				y->parent = x->parent;
-				if (!x->parent)
+				if (x->parent == _NIL_NODE)
 					this->_root = y;
 				else if (x->parent->left == x)
 					x->parent->left = y;
@@ -333,10 +344,10 @@ namespace ft
 			{
 				tree_node *y = x->left;
 				x->left = y->right;
-				if (y->right)
+				if (y->right != _NIL_NODE)
 					y->right->parent = x;
 				y->parent = x->parent;
-				if (!x->parent)
+				if (x->parent == _NIL_NODE)
 					this->_root = y;
 				else if (x->parent->left == x)
 					x->parent->left = y;
@@ -430,7 +441,7 @@ namespace ft
 						}
 						else if (_comp(tmp->value, new_node->value))
 						{
-							if (tmp->right)
+							if (tmp->right != _NIL_NODE)
 								tmp = tmp->right;
 							else
 							{
@@ -441,7 +452,7 @@ namespace ft
 						}
 						else
 						{
-							if (tmp->left)
+							if (tmp->left != _NIL_NODE)
 								tmp = tmp->left;
 							else
 							{
@@ -545,7 +556,7 @@ namespace ft
 			{
 				tree_node	*rebalance_node;
 				tree_node	*del_node;
-				bool		isBlack_original;
+				bool		isBlack_original = false;
 
 				if (node->left == _NIL_NODE)
 				{
@@ -645,6 +656,11 @@ namespace ft
 						node = node->right;
 				}
 				return (upper);
+			}
+
+			tree_node *get_nil() const
+			{
+				return (_NIL_NODE);
 			}
 
 		private:

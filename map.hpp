@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 19:56:33 by zhliew            #+#    #+#             */
-/*   Updated: 2022/12/12 18:50:03 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/14 23:03:38 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ namespace ft
 					typedef value_type	first_argument_type;
 					typedef value_type	second_argument_type;
 					
-					bool operator()(const value_type& x, const value_type& y) const
+					bool operator()(const value_type &x, const value_type &y) const
 					{
 						return comp(x.first, y.first);
 					}
@@ -82,6 +82,19 @@ namespace ft
 				{
 					_tree.insert(*first);
 					first++;
+				}
+				tree_node *node = _tree.get_root();
+				std::cout << node->value.first << std::endl;
+				while (node->left != _tree.get_nil())
+				{
+					node = node->left;
+					std::cout << node->value.first << std::endl;
+				}
+				node = _tree.get_root();
+				while (node->right != _tree.get_nil())
+				{
+					node = node->right;
+					std::cout << node->value.first << std::endl;
 				}
 			}
 
@@ -114,22 +127,22 @@ namespace ft
 
 			iterator end()
 			{
-				return (iterator(_tree.max_node(_tree.get_root())));
+				return (iterator(_tree.get_nil()));
 			}
 			
 			const_iterator end() const
 			{
-				return (iterator(_tree.max_node(_tree.get_root())));
+				return (iterator(_tree.get_nil()));
 			}
 
 			reverse_iterator rbegin()
 			{
-				return (reverse_iterator(this->end()));
+				return (reverse_iterator(_tree.max_node(_tree.get_root())));
 			}
 			
 			const_reverse_iterator rbegin() const
 			{
-				return (reverse_iterator(this->end()));
+				return (reverse_iterator(_tree.max_node(_tree.get_root())));
 			}
 
 			reverse_iterator rend()
@@ -159,7 +172,9 @@ namespace ft
 
 			mapped_type &operator[](const key_type& k)
 			{
-				return ((*((this->insert(ft::make_pair(k,mapped_type()))).first)).second);
+				mapped_type &tmp = (*((this->insert(ft::make_pair(k,mapped_type()))).first)).second;
+				return (tmp);
+				// return ((*((this->insert(ft::make_pair(k,mapped_type()))).first)).second);
 			}
 
 			ft::pair<iterator,bool> insert(const value_type& val)
@@ -189,25 +204,29 @@ namespace ft
 
 			void erase(iterator position)
 			{
-				_tree.delete_node(*position);
+				_tree.delete_node(position.base());
 			}
 
 			size_type erase(const key_type& k)
 			{
-				_tree.delete_node(ft::make_pair(k, mapped_type()));
-				return (_tree.size());
+				tree_node	*del = _tree.find(ft::make_pair(k, mapped_type()));
+
+		        if (!del)
+                    return (0);		
+		       	_tree.delete_node(del);
+		        return (1);
 			}
 
      		void erase(iterator first, iterator last)
 			{
 				while (first != last)
 				{
-					_tree.delete_node(*first);
+					_tree.delete_node(first.base());
 					first++;
 				}
 			}
 
-			void swap (map& x)
+			void swap(map& x)
 			{
 				ft::swap(_tree, x._tree);
 				ft::swap(_alloc, x._alloc);
@@ -238,12 +257,12 @@ namespace ft
 				return (this->end());
 			}
 			
-			const_iterator find (const key_type& k) const
+			const_iterator find(const key_type& k) const
 			{
 				tree_node *tmp = _tree.find(ft::make_pair(k, mapped_type()));
 
 				if (tmp)
-					return (const_iterator(tmp));
+					return (iterator(tmp));
 				return (this->end());
 			}
 
@@ -296,6 +315,50 @@ namespace ft
 			key_compare		_key_comp;
 			allocator_type	_alloc;
 	};
+
+	template <class T, class Alloc>
+	bool	operator==(const map<T, Alloc> &l, const map<T, Alloc> &r) 
+	{
+		if (l.size() != r.size())
+			return (false);
+		return (ft::equal(l.begin(), l.end(), r.begin()));
+	};
+
+	template <class T, class Alloc>
+	bool	operator!=(const map< T, Alloc >& l, const map< T, Alloc >& r)
+	{
+		return !(l == r);
+	}
+
+	template <class T, class Alloc>
+	bool	operator <(const map<T, Alloc> &l, const map<T, Alloc> &r)
+	{
+		return ft::lexicographical_compare(l.begin(), l.end(), r.begin(), r.end());
+	}
+
+	template <class T, class Alloc>
+	bool	operator <=(const map<T, Alloc> &l, const map<T, Alloc> &r)
+	{
+		return !(r < l);
+	}
+
+	template <class T, class Alloc>
+	bool	operator >(const map<T, Alloc> &l, const map<T, Alloc> &r)
+	{
+		return r < l;
+	}
+
+	template <class T, class Alloc>
+	bool	operator >=(const map<T, Alloc> &l, const map<T, Alloc> &r)
+	{
+		return !(l < r);
+	}
+
+	template <class T, class Alloc>
+	void	swap(map<T, Alloc> &x, map<T, Alloc>  &y)
+	{
+		x.swap(y);
+	}
 }
 
 #endif
