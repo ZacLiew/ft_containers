@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 19:56:33 by zhliew            #+#    #+#             */
-/*   Updated: 2022/12/14 23:03:38 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/17 20:20:54 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,18 +84,11 @@ namespace ft
 					first++;
 				}
 				tree_node *node = _tree.get_root();
-				std::cout << node->value.first << std::endl;
 				while (node->left != _tree.get_nil())
-				{
 					node = node->left;
-					std::cout << node->value.first << std::endl;
-				}
 				node = _tree.get_root();
 				while (node->right != _tree.get_nil())
-				{
 					node = node->right;
-					std::cout << node->value.first << std::endl;
-				}
 			}
 
 			map(map const& x)
@@ -137,12 +130,12 @@ namespace ft
 
 			reverse_iterator rbegin()
 			{
-				return (reverse_iterator(_tree.max_node(_tree.get_root())));
+				return (reverse_iterator(_tree.get_nil()));
 			}
 			
 			const_reverse_iterator rbegin() const
 			{
-				return (reverse_iterator(_tree.max_node(_tree.get_root())));
+				return (reverse_iterator(_tree.get_nil()));
 			}
 
 			reverse_iterator rend()

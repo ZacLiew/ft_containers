@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 18:12:16 by zhliew            #+#    #+#             */
-/*   Updated: 2022/12/14 23:18:32 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/17 20:28:09 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,19 +97,16 @@ namespace ft
             	return (&(_node->value));
         	}
 
-			///wrong here, need to find a way to stop at NIL_NODE and not NULL, same goes for --
 			rbt_iterator &operator++()
 			{
-				if (!_node)
+				if (!_node || _node->isNIL)
 					return *this;
-				else if (_node->right)
+				else if (_node->right && !_node->right->isNIL)
 				{
 					_node = _node->right;
-					while (_node && _node->left)
+					while (_node->left && !_node->left->isNIL)
 						_node = _node->left;
 				}
-				else if (_node == max_node(_node))
-					_node = 0;
 				else
 				{
 					while (_node->parent->right == _node)
@@ -128,12 +125,12 @@ namespace ft
 
 			rbt_iterator	&operator--()
 			{
-				if (!_node)
-					_node = max_node(_node);
-				else if (_node->left)
+				if (!_node || _node->isNIL)
+					_node = max_node(_node->parent);
+				else if (_node->left && !_node->left->isNIL)
 				{
 					_node = _node->left;
-					while (_node->right)
+					while (_node->right && !_node->right->isNIL)
 						_node = _node->right;
 				}
 				else
@@ -177,11 +174,11 @@ namespace ft
 
 			tree_node	*max_node(tree_node *node) const
 			{
-				if (node)
+				if (node && !node->isNIL)
 				{
-					while (node->parent)
+					while (node->parent && !node->parent->isNIL)
 						node = node->parent;
-					while (node->right)
+					while (node->right && !node->right->isNIL)
 						node = node->right;
 				}
 				return (node);
@@ -226,6 +223,7 @@ namespace ft
 				}
 				if (first != ref.get_nil() && first == end)
 					this->insert(*first);
+				_size = ref.size();
 			};
 
 			rbt &operator=(rbt const &ref)
@@ -235,7 +233,6 @@ namespace ft
 					clear(this->_root);
 					iterator first = ref.min_node(ref.get_root());
 					iterator end = ref.max_node(ref.get_root());
-					// std::cout << (*first).first << std::endl;
 					while (first != end)
 					{
 						this->insert(*first);
@@ -246,6 +243,7 @@ namespace ft
 					_comp = ref._comp;
 					_alloc = ref._alloc;
 				}
+				_size = ref.size();
 				return (*this);
 			}
 
@@ -342,6 +340,7 @@ namespace ft
 					x->parent->right = y;
 				y->left = x;
 				x->parent = y;
+				_NIL_NODE->parent = _root;
 			}
 
 			void	rotate_right(tree_node *x)
@@ -359,6 +358,7 @@ namespace ft
 					x->parent->right = y;
 				y->right = x;
 				x->parent = y;
+				_NIL_NODE->parent = _root;
 			}
 
 			tree_node *get_root() const
@@ -431,6 +431,7 @@ namespace ft
 				if (_root == _NIL_NODE)
 				{
 					_root = new_node;
+					_NIL_NODE->parent = _root;
 					new_node->isBlack = true;
 				}
 				else
@@ -489,7 +490,7 @@ namespace ft
 							rotate_left(node->parent);
 							tmp = node->parent->right;
 						}
-						if (tmp->left->isBlack == true && node->right->isBlack == true)
+						if (tmp->left->isBlack == true && tmp->right->isBlack == true)
 						{
 							tmp->isBlack = false;
 							node = node->parent;
@@ -508,6 +509,7 @@ namespace ft
 							tmp->right->isBlack = true;
 							rotate_left(node->parent);
 							node = _root;
+							_NIL_NODE->parent = _root;
 						}
 					}
 					else
@@ -520,7 +522,7 @@ namespace ft
 							rotate_right(node->parent);
 							tmp = node->parent->left;
 						}
-						if (tmp->left->isBlack == true && node->right->isBlack == true)
+						if (tmp->right->isBlack == true && tmp->left->isBlack == true)
 						{
 							tmp->isBlack = false;
 							node = node->parent;
@@ -539,6 +541,7 @@ namespace ft
 							tmp->left->isBlack = true;
 							rotate_right(node->parent);
 							node = _root;
+							_NIL_NODE->parent = _root;
 						}
 					}
 				}
@@ -548,7 +551,10 @@ namespace ft
 			void	transplantnode(tree_node *old, tree_node *neww)
 			{
 				if (old->parent == _NIL_NODE)
+				{
 					_root = neww;
+					_NIL_NODE->parent = _root;
+				}
 				else if (old->parent->left == old)
 					old->parent->left = neww;
 				else
@@ -624,6 +630,8 @@ namespace ft
 					free_node(node);
 				}
 				_root = _NIL_NODE;
+				_NIL_NODE->parent = NULL;
+				_size = 0;
 			}
 
 			tree_node *lower_bound(value_type const &value) const
