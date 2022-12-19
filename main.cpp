@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/01 15:34:46 by zhliew            #+#    #+#             */
-/*   Updated: 2022/12/17 20:18:07 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/19 19:51:02 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,18 +23,16 @@
 int main()
 {
     ft::map<int, std::string> mp;
-	ft::map<int, std::string>::reverse_iterator it;
-	ft::map<int, std::string>::reverse_iterator end;
+	ft::map<int, std::string>::iterator it;
 
-	mp[42] = "fgzgxfn";
-	mp[25] = "funny";
-	mp[80] = "hey";
-	it = mp.rbegin();
-	end = mp.rend();
-	for (; it != end; it++)
-	{
-		std::cout << "key: " << it->first << " | value: " << it->second << std::endl;
-	}
-	end--;
-	std::cout << end->first << std::endl;
+	mp[5] = "funny";
+	mp[10] = "fgzgxfn";
+	mp[8] = "fgzgxfn";
+	mp[11] = "fgzgxfn";
+
+	it = mp.begin();
+	std::cout << it.base()->value.first << std::endl;
+	std::cout << it.base()->left->value.first << std::endl;
+	std::cout << it.base()->right->value.first << std::endl;
+	std::cout << it.base()->parent->value.first << std::endl;
 }
