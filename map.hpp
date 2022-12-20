@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 19:56:33 by zhliew            #+#    #+#             */
-/*   Updated: 2022/12/19 19:37:42 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/20 21:49:27 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,7 +167,24 @@ namespace ft
 			{
 				mapped_type &tmp = (*((this->insert(ft::make_pair(k,mapped_type()))).first)).second;
 				return (tmp);
-				// return ((*((this->insert(ft::make_pair(k,mapped_type()))).first)).second);
+			}
+
+			mapped_type &at(const key_type &k)
+			{
+				tree_node *tmp = _tree.find(ft::make_pair(k,mapped_type()));
+
+				if (!tmp)
+					throw std::out_of_range ("out");
+				return tmp->value.second;
+			}
+			
+			const mapped_type &at(const key_type &k) const
+			{
+				tree_node *tmp = _tree.find(ft::make_pair(k,mapped_type()));
+
+				if (!tmp)
+					throw std::out_of_range ("out");
+				return tmp->value.second;
 			}
 
 			ft::pair<iterator,bool> insert(const value_type& val)
@@ -212,18 +229,19 @@ namespace ft
 
      		void erase(iterator first, iterator last)
 			{
+				iterator tmp = first;
+
 				while (first != last)
 				{
+					tmp++;
 					_tree.delete_node(first.base());
-					first++;
+					first = tmp;
 				}
 			}
 
 			void swap(map& x)
 			{
-				ft::swap(_tree, x._tree);
-				ft::swap(_alloc, x._alloc);
-				ft::swap(_key_comp, x._key_comp);
+				_tree.swap(x._tree);
 			}
 
 			void clear()
@@ -301,6 +319,11 @@ namespace ft
 			allocator_type get_allocator() const
 			{
 				return (this->_alloc);
+			}
+
+			tree_node *get_root() const
+			{
+				return (_tree.get_root());
 			}
 		
 		private:

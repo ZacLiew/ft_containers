@@ -6,7 +6,7 @@
 /*   By: zhliew <zhliew@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 18:12:16 by zhliew            #+#    #+#             */
-/*   Updated: 2022/12/19 19:49:05 by zhliew           ###   ########.fr       */
+/*   Updated: 2022/12/20 21:14:26 by zhliew           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,8 @@ namespace ft
 			typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::difference_type		difference_type;
 			typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::pointer				pointer;
 			typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::reference				reference;
+			typedef const T*																		const_pointer;
+        	typedef const T&                        												const_reference;
 			typedef ft::node<value_type>															tree_node;
 			typedef ft::node<const value_type>														const_tree_node;
 
@@ -91,11 +93,21 @@ namespace ft
 			{
 				return (_node->value);
 			}
+			
+			const_reference	operator*() const
+			{
+				return (_node->value);
+			};
 
-			pointer operator->() const
+			pointer operator->()
 			{
             	return (&(_node->value));
         	}
+
+			const_pointer	operator->() const
+			{
+				return (&(_node->value));
+			};
 
 			rbt_iterator &operator++()
 			{
@@ -260,6 +272,7 @@ namespace ft
 				new_node->left = _NIL_NODE;
 				new_node->right = _NIL_NODE;
 				new_node->parent = _NIL_NODE;
+				new_node->isBlack = false;
 				new_node->isNIL = false;
 				return (new_node);
 			}
@@ -340,7 +353,6 @@ namespace ft
 					x->parent->right = y;
 				y->left = x;
 				x->parent = y;
-				_NIL_NODE->parent = _root;
 			}
 
 			void	rotate_right(tree_node *x)
@@ -352,13 +364,12 @@ namespace ft
 				y->parent = x->parent;
 				if (x->parent == _NIL_NODE)
 					this->_root = y;
-				else if (x->parent->left == x)
-					x->parent->left = y;
-				else
+				else if (x->parent->right == x)
 					x->parent->right = y;
+				else
+					x->parent->left = y;
 				y->right = x;
 				x->parent = y;
-				_NIL_NODE->parent = _root;
 			}
 
 			tree_node *get_root() const
@@ -369,7 +380,7 @@ namespace ft
 			void	balance_insert(tree_node *node)
 			{
 				tree_node *tmp;
-				while (node->parent->isBlack == false)
+				while (node != _root && node->parent->isBlack == false)
 				{
 					if (node->parent == node->parent->parent->right)
 					{
@@ -415,8 +426,6 @@ namespace ft
 							rotate_right(node->parent->parent);
 						}
 					}
-					if (node == _root)
-						break;
 				}
 				_root->isBlack = true;
 			}
@@ -431,8 +440,7 @@ namespace ft
 				if (_root == _NIL_NODE)
 				{
 					_root = new_node;
-					_NIL_NODE->parent = _root;
-					new_node->isBlack = true;
+					_root->isBlack = true;
 				}
 				else
 				{
@@ -471,6 +479,7 @@ namespace ft
 				}
 				balance_insert(new_node);
 				_size++;
+				_NIL_NODE->parent = _root;
 				return (true);
 			}
 
@@ -509,7 +518,6 @@ namespace ft
 							tmp->right->isBlack = true;
 							rotate_left(node->parent);
 							node = _root;
-							_NIL_NODE->parent = _root;
 						}
 					}
 					else
@@ -541,7 +549,6 @@ namespace ft
 							tmp->left->isBlack = true;
 							rotate_right(node->parent);
 							node = _root;
-							_NIL_NODE->parent = _root;
 						}
 					}
 				}
@@ -553,9 +560,8 @@ namespace ft
 				if (old->parent == _NIL_NODE)
 				{
 					_root = neww;
-					_NIL_NODE->parent = _root;
 				}
-				else if (old->parent->left == old)
+				else if (old == old->parent->left)
 					old->parent->left = neww;
 				else
 					old->parent->right = neww;
@@ -565,8 +571,8 @@ namespace ft
 			void	delete_node(tree_node *node)
 			{
 				tree_node	*rebalance_node;
-				tree_node	*del_node;
-				bool		isBlack_original = false;
+				tree_node	*del_node = node;
+				bool		isBlack_original = node->isBlack;
 
 				if (node->left == _NIL_NODE)
 				{
@@ -600,6 +606,7 @@ namespace ft
 					balance_delete(rebalance_node);
 				free_node(node);
 				_size--;
+				_NIL_NODE->parent = _root;
 			}
 
 			bool empty() const
@@ -673,6 +680,16 @@ namespace ft
 			tree_node *get_nil() const
 			{
 				return (_NIL_NODE);
+			}
+
+			void	swap(rbt &ref)
+			{
+				ft::swap(_NIL_NODE, ref._NIL_NODE);
+				ft::swap(_root, ref._root);
+				ft::swap(_alloc, ref._alloc);
+				ft::swap(_tree_alloc, ref._tree_alloc);
+				ft::swap(_comp, ref._comp);
+				ft::swap(_size, ref._size);
 			}
 
 		private:
